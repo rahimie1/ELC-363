@@ -2,7 +2,6 @@
 
 module Controller
 (
-  input clk,
   input [10:0] Instruction,
   output reg isZeroBranch,
   output reg isUnconBranch,
@@ -28,7 +27,8 @@ module Controller
   `define OPERATION_CBZ               'b00101101000
   `define OPERATION_B                 'b00000000101
 
-  always @(posedge clk) begin 
+  // Update control lines with each instruction
+  always @(Instruction) begin 
     case (Instruction)
       // R-Types have the same control outputs
       `OPERATION_ADD,
@@ -55,7 +55,24 @@ module Controller
         mem2reg <= 1;
       end
       `OPERATION_STUR: begin
-
+        reg2loc <= 1'b1;
+        aluOp <= 2'b01;
+        aluSrc <= 1;
+        branch <= 0;
+        memRead <= 1;
+        memWrite <= 1;
+        regWrite <= 0;
+        mem2reg <= 1'bx;
+      end
+      `OPERATION_CBZ: begin
+        reg2loc <= 1'b1;
+        aluOp <= 2'b01;
+        aluSrc <= 0;
+        branch <= 1;
+        memRead <= 0;
+        memWrite <= 0;
+        regWrite <= 0;
+        mem2reg <= 1'bx;
       end
     endcase
   end

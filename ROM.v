@@ -1,3 +1,8 @@
+/*
+    Luke Zambella
+    ELC463 Computer Engineering Lab II
+    ROM that stores a program, replaces the instruction memory
+*/
 module ROM(out, address);
     output reg [31:0] out;
     input  [15:0] address; // address- 16 deep memory  
