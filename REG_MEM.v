@@ -16,7 +16,7 @@ module REG_MEM(
     
         reg [63:0] REGISTER [31:0];      // 32 general purpose registers holding 64 bits each
         // Asyncronous read
-        always @ (READ_REG_A or READ_REG_B) begin        
+        always @ (*) begin        
             DATA_OUT_B <= REGISTER[READ_REG_B];
             DATA_OUT_A <= REGISTER[READ_REG_A];
         end
@@ -29,8 +29,7 @@ module REG_MEM(
         end
         // lets give some registers initial values
         initial begin
-            $monitor("Time: %d REG_A output: %4h REG_B output: %4h", $time, DATA_OUT_A, DATA_OUT_B);
-            REGISTER[0] = 'h0000;
+            REGISTER[0] = 'h000A;
             REGISTER[1] = 'h0005;
             REGISTER[2] = 'h0005;
             REGISTER[3] = 'hFFFF;
