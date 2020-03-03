@@ -7,33 +7,39 @@
     */ 
 
 module MEM_PIPE(
-    input CLK,  
+    input CLK,
     input RESET,
-    input [31:0] MEM_DATA, ALU_VAL, 
-    input [4:0] REG_DESTINATION,
-    input [1:0] ALU_CONTROL,
+    input [63:0] mem_address_in,
+    input [63:0] mem_data_in,
+    input [4:0] write_reg_in,
+    input regWrite_in,
+    input mem2Reg_in,
     
-    output reg [31:0] MEM_DATA_OUT, ALU_VAL_OUT,
-    output reg [4:0] REG_DESTINATION_OUT,
-    output reg [1:0] ALU_CONTROL_OUT
+    output reg [63:0] mem_address_out,
+    output reg [63:0] mem_data_out,
+    output reg [4:0] write_reg_out,
+    output reg regWrite_out,
+    output reg mem2Reg_out
      
 );
 
 always @( posedge CLK or posedge RESET) begin
     if(RESET) begin
-            MEM_DATA_OUT        <= 0;
-            ALU_VAL_OUT         <= 0;
-            REG_DESTINATION_OUT <= 0;
-            ALU_CONTROL_OUT     <= 0;
+            regWrite_out <= 0;
+            mem2Reg_out <= 0;
+            mem_address_out <= 0;
+            mem_data_out <= 0;
+            write_reg_out <= 0;  
     end
     else begin
-            MEM_DATA_OUT        <= MEM_DATA;
-            ALU_VAL_OUT         <= ALU_VAL;
-            REG_DESTINATION_OUT <= REG_DESTINATION;
-            ALU_CONTROL_OUT     <= ALU_CONTROL;
-         
+            regWrite_out <= regWrite_in;
+            mem2Reg_out <= mem2Reg_in;
+            mem_address_out <= mem_address_in;
+            mem_data_out <= mem_data_in;
+            write_reg_out <= write_reg_in;        
     end
     
 end
 
 endmodule
+
