@@ -9,13 +9,18 @@
 module MEM_PIPE(
     input CLK,  
     input RESET,
-    input [31:0] MEM_DATA, ALU_VAL, 
+    // ALU res gets passed and the mem data out gets passed as well
+    input [63:0] MEM_DATA, ALU_VAL, 
     input [4:0] REG_DESTINATION,
-    input [1:0] ALU_CONTROL,
+
+    input REGWRITE_IN,
+    input MEM2REG_IN,
     
-    output reg [31:0] MEM_DATA_OUT, ALU_VAL_OUT,
+    output reg [63:0] MEM_DATA_OUT, ALU_VAL_OUT,
     output reg [4:0] REG_DESTINATION_OUT,
-    output reg [1:0] ALU_CONTROL_OUT
+
+    output reg REGWRITE_OUT,
+    output reg MEM2REG_OUT
      
 );
 
@@ -24,13 +29,13 @@ always @( posedge CLK or posedge RESET) begin
             MEM_DATA_OUT        <= 0;
             ALU_VAL_OUT         <= 0;
             REG_DESTINATION_OUT <= 0;
-            ALU_CONTROL_OUT     <= 0;
     end
     else begin
             MEM_DATA_OUT        <= MEM_DATA;
             ALU_VAL_OUT         <= ALU_VAL;
             REG_DESTINATION_OUT <= REG_DESTINATION;
-            ALU_CONTROL_OUT     <= ALU_CONTROL;
+            REGWRITE_OUT <= REGWRITE_IN;
+            MEM2REG_OUT <= MEM2REG_IN;
          
     end
     

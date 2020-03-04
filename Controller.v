@@ -28,7 +28,7 @@ module Controller
   `define OPERATION_B                 'b00000000101
 
   // Update control lines with each instruction
-  always @(Instruction) begin 
+  always @(*) begin 
     case (Instruction)
       // R-Types have the same control outputs
       `OPERATION_ADD,
@@ -45,7 +45,7 @@ module Controller
         mem2reg <= 0;
       end
       `OPERATION_LDUR: begin
-        reg2loc <= 'bx;
+        reg2loc <= 'b0;
         aluOp <= 2'b00;
         aluSrc <= 1;
         branch <= 0;
@@ -56,10 +56,10 @@ module Controller
       end
       `OPERATION_STUR: begin
         reg2loc <= 1'b1;
-        aluOp <= 2'b01;
+        aluOp <= 2'b00;
         aluSrc <= 1;
         branch <= 0;
-        memRead <= 1;
+        memRead <= 0;
         memWrite <= 1;
         regWrite <= 0;
         mem2reg <= 1'bx;
@@ -76,5 +76,4 @@ module Controller
       end
     endcase
   end
-
 endmodule

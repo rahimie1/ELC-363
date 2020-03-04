@@ -31,8 +31,8 @@ module DATA_MEM(
             end
         end
         
-        initial begin 
-            DATA_MEMORY[0] = 'hAAAA;
-            DATA_MEMORY[1] = 'hBBBB;           
+        initial begin
+            DATA_MEMORY[0] = 'h0005;
+            DATA_MEMORY[1] = 'h0003;           
         end
 endmodule
