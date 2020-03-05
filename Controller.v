@@ -24,7 +24,7 @@ module Controller
   `define OPERATION_LDUR              'b11111000010
   `define OPERATION_STUR              'b11111000000
   
-  `define OPERATION_CBZ               'b00101101000
+  `define OPERATION_CBZ               'b10110100000
   `define OPERATION_B                 'b00000000101
 
   // Update control lines with each instruction

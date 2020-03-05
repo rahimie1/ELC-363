@@ -2,14 +2,15 @@
 module ARM_RISC(input clock,
                 input [63:0] writeback_data,            // The output of the data memory unit gets fed to to this              
                 input [31:0] instruction,               // Instruction fed into the cpu
-                input [31:0] program_counter,           // Program counter
                 input reset,
                 input [31:0] pc,
                 output wire [63:0] mem_addr_input,       // Data memory read this value
                 output wire [63:0] write_data_input,     // Data memry read this value
                 output wire memory_write,                // Both of these are for setting the memory unit to read/write
                 output wire memory_read,
-                output wire [63:0] alu_res_debug              // alu debug results
+                output wire [63:0] alu_res_debug,        // alu debug results
+                output wire ctrl_branch_out,             // comes from an AND of the cbz and ALU zero output
+                output wire [31:0] branch_pc_out            // always passed out, sometimes contains garbage
                 );
 `define OPERATION_LDUR              'b11111000010
 `define OPERATION_STUR              'b11111000000
@@ -24,7 +25,7 @@ module ARM_RISC(input clock,
 // Takes in the entire instruction read from ROM along with the current program counter
 // The program counter is not physically a part of the CPU
 wire [31:0] instruction_passthrough_a;
-
+wire [31:0] counter_out_id;
 // Control unit
 // memread and memwrite and internal wires and not related to the modules output
 // those outputs should be for the proper memory stage
@@ -39,15 +40,16 @@ wire [31:0] pc_out_ex;
 wire [10:0] aluCtrl_out_ex;
 wire [4:0] write_register_out_ex;   // Execute stage write_reg_out
 wire [63:0] signExtend_out_ex;
+
 // EX/MEM specific datalines
-wire regwrite_out_mem, mem2reg_out_mem, memwrite_out_mem, branch_out_mem;
+wire regwrite_out_mem, mem2reg_out_mem, branch_out_mem;
 wire [4:0] write_register_out_mem; // write register passthrough for MEM stage
+wire [63:0] branch_addr;
 
 // EX/MEM datalines for components (?)
 wire aluZero, aluZero_out; // EX stage pipeline alu zero IO
-wire [63:0] branch_in, alu_res, branch_out, alu_res_out, rt_read_out;
-wire [4:0] reg_dest_in, reg_dest_out;
-wire [5:0] alu_ctrl_in, alu_ctrl_out;
+wire [63:0] alu_res, alu_res_out, branch_addr_out_mem;
+wire [5:0] alu_ctrl_in;
 
 // MEM/WB specific datalines
 wire regWrite_out_wb, mem2reg_out_wb;
@@ -63,9 +65,8 @@ Controller control(.Instruction(instruction_passthrough_a[31:21]), // Second sta
                    .memRead(memRead),
                    .memWrite(memWrite),
                    .mem2reg(mem2reg),
-                   .regWrite(regWrite)
-                   //add branches later
-                   // TODO:
+                   .regWrite(regWrite),
+                   .branch(branch)
                    );
 
 
@@ -117,7 +118,9 @@ ALU alu(.A(reg_data_a_out_ex),
 INSTR_PIPE pipe_a(.CLK(clock),
                    .RESET(reset),
                    .INSTR_IN(instruction),
-                   .INSTR_OUT(instruction_passthrough_a));
+                   .COUNTER_IN(pc),
+                   .INSTR_OUT(instruction_passthrough_a),
+                   .COUNTER_OUT(pc_out_id));
 
 // ID/EX
 ID_PIPE pipe_b(.CLK(clock),
@@ -131,7 +134,7 @@ ID_PIPE pipe_b(.CLK(clock),
                 .aluOp_in(alu_opcode),
                 .register_data_a_in(register_data_a),
                 .register_data_b_in(register_data_b),
-                .pc_in(pc),    // TODO:
+                .pc_in(pc_out_id),    // TODO:
                 .aluControl_in(instruction_passthrough_a[31:21]), // This is the instruction
                 .write_register_in(instruction_passthrough_a[4:0]),
                 .signExtend_in(instruction_passthrough_a), // passes the entire instruction
@@ -154,10 +157,13 @@ ID_PIPE pipe_b(.CLK(clock),
 
 // EX/MEM
 assign mem_addr_input = alu_res_out; // the alu result can point to a memory address to store
+// For branching, add the current counter to some value that only works if its a branch
+assign branch_addr = pc_out_ex + signExtend_out_ex[23:5];
+assign ctrl_branch_out = branch_out_mem && aluZero_out;
 EX_PIPE pipe_c(.CLK(clock),
                .RESET(reset),
                .ZERO(aluZero),
-               .BRANCH(branch_in),
+               .BRANCH(branch_addr),
                .ALU_VAL(alu_res),
                .RT_READ(reg_data_b_out_ex),
                .ALU_CONTROL(alu_ctrl_in),
@@ -169,7 +175,7 @@ EX_PIPE pipe_c(.CLK(clock),
                .BRANCH_ZERO_IN(branch_out_ex), // control branch out for CBZ instr
                .REG_DESTINATION(write_register_out_ex),
 
-               .BRANCH_OUT(branch_out),
+               .BRANCH_OUT(branch_pc_out),
                .RT_READ_OUT(write_data_input), // This is the register contents reference by reg_data_b
                .ALU_VAL_OUT(alu_res_out),
                .ZERO_OUT(aluZero_out),

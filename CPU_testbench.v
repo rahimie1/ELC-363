@@ -13,6 +13,9 @@ wire [63:0] alu_res;
 wire [15:0] instr_addr;
 wire [31:0] output_instr;
 reg [31:0] pc;
+wire [31:0] pc_branch;
+wire pc_src;
+wire [31:0] pc_mux_out; // mux output for pc_src. for branching
 // Data memory
 DATA_MEM memory(.CLK(clock),
                 .MEM_WRITE(memWrite),
@@ -30,13 +33,15 @@ ROM program(.address(pc),
 ARM_RISC cpu(.clock(clock),
         .writeback_data(mem_data_out),
         .instruction(output_instr),
-        .program_counter(pc),
+        .pc(pc),
         
         .mem_addr_input(mem_addr_in),
         .write_data_input(write_data_in),
         .memory_write(memWrite),
         .memory_read(memRead),
-        .alu_res_debug(alu_res)
+        .alu_res_debug(alu_res),
+        .ctrl_branch_out(pc_src),
+        .branch_pc_out(pc_branch)
         );
 
 always begin
@@ -47,9 +52,13 @@ end
 
 always @ (posedge clock) begin
     // increment program counter each clock cycle
-    pc = pc + 1;
+    // check if branch first,set counter to the branch address otherwise increment it
+    if (pc_src == 'b1) begin
+        pc <= pc_branch;
+    end else begin
+        pc <= pc + 1;
+    end
 end
-
 initial begin
     $dumpvars(0);
     clock = 0;

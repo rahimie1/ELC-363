@@ -29,7 +29,7 @@ module REG_MEM(
         end
         // lets give some registers initial values
         initial begin
-            $monitor("Time %d val[0, 1, 2]: %h %h %h", $time, REGISTER[0], REGISTER[1], REGISTER[2]);
+            //$monitor("Time %d val[0, 1, 2]: %h %h %h", $time, REGISTER[0], REGISTER[1], REGISTER[2]);
             REGISTER[4] = 16'h000A;
             REGISTER[5] = 16'h0005;
             // These are used as memory address locations
