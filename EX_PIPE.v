@@ -7,32 +7,27 @@
     */ 
 
 module EX_PIPE(
-    
-  input CLK,
-  input RESET,
-  input ZeroBranch_in, 	
-  input UnconBranch_in, 	
-  input memRead_in, 		
-  input memWrite_in, 		
-  input regWrite_in, 		
-  input mem2Reg_in, 		
-  input [63:0] shifted_PC_in,
-  input alu_zero_in,
-  input [63:0] alu_result_in,
-  input [63:0] write_data_mem_in,
-  input [4:0] write_reg_in,
-  
-  output reg ZeroBranch_out, 	
-  output reg UnconBranch_out, 
-  output reg memRead_out, 		
-  output reg memWrite_out, 		
-  output reg regWrite_out,		
-  output reg mem2Reg_out,		
-  output reg [63:0] shifted_PC_out,
-  output reg alu_zero_out,
-  output reg [63:0] alu_result_out,
-  output reg [63:0] write_data_mem_out,
-  output reg [4:0] write_reg_out
+    input CLK,  
+    input RESET,
+    input ZERO,
+    input [63:0] BRANCH, ALU_VAL, RT_READ, 
+    input [4:0] REG_DESTINATION,
+    input [5:0] ALU_CONTROL,
+    input REGWRITE_IN,
+    input MEM2REG_IN,
+    input MEMWRITE_IN,
+    input BRANCH_ZERO_IN,
+    input MEMREAD_IN,
+
+    output reg [63:0] BRANCH_OUT, RT_READ_OUT, ALU_VAL_OUT,
+    output reg [4:0] REG_DESTINATION_OUT,
+    output reg [5:0] ALU_CONTROL_OUT,
+    output reg ZERO_OUT,
+    output reg REGWRITE_OUT,
+    output reg MEM2REG_OUT,
+    output reg MEMWRITE_OUT,
+    output reg BRANCH_ZERO_OUT,
+    output reg MEMREAD_OUT
 );
 
   always @( posedge CLK or posedge RESET) begin
@@ -52,19 +47,17 @@ module EX_PIPE(
             write_reg_out <= 0;
     end
     else begin
-            ZeroBranch_out <= ZeroBranch_in;
-            UnconBranch_out <= UnconBranch_in;
-  	        memRead_out <= memRead_in;
- 	        memWrite_out <= memWrite_in;
-
-            regWrite_out <= regWrite_in;
-  	        mem2Reg_out <= mem2Reg_in;
-
-            shifted_PC_out <= shifted_PC_in;
-            alu_zero_out <= alu_zero_in;
-            alu_result_out <= alu_result_in;
-            write_data_mem_out <= write_data_mem_in;
-            write_reg_out <= write_reg_in;         
+            BRANCH_OUT        <= BRANCH;
+            ALU_VAL_OUT         <= ALU_VAL;
+            RT_READ_OUT         <= RT_READ;
+            REG_DESTINATION_OUT <= REG_DESTINATION;
+            ALU_CONTROL_OUT     <= ALU_CONTROL;
+            ZERO_OUT            <= ZERO;         
+            REGWRITE_OUT <= REGWRITE_IN;
+            MEM2REG_OUT <= MEM2REG_IN;
+            MEMREAD_OUT <= MEMREAD_IN;
+            MEMWRITE_OUT <= MEMWRITE_IN;
+            BRANCH_ZERO_OUT <= BRANCH_ZERO_IN;
     end
     
 end

@@ -1,1 +1,10 @@
 *.out
+*.vcd
+code.aux
+code.fdb_latexmk
+code.fls
+code.log
+code.pdf
+code.synctex.gz
+code.tex
+synthesis.ys
