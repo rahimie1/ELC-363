@@ -40,7 +40,7 @@ module ID_PIPE(
     output reg [63:0] signExtend_out
 );
 
-always @( posedge CLK or posedge RESET) begin
+always @( posedge CLK) begin
         // Pass control unit outputs
         reg2loc_out <= reg2loc_in;
         aluSrc_out <= aluSrc_in;

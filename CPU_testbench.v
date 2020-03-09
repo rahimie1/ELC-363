@@ -63,8 +63,8 @@ initial begin
     $dumpvars(0);
     clock = 0;
     pc = 0;
-    #1000
-    $display("time: %d Finish sim", $time);
-    $finish;
+    //#1000
+    //$display("time: %d Finish sim", $time);
+    //$finish;
 end
 endmodule
